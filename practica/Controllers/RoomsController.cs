@@ -88,7 +88,7 @@ namespace practica.Controllers
             IEnumerable<Room> query = _rooms;
             if (!string.IsNullOrWhiteSpace(q))
             {
-                query.Where(r =>
+                query = query.Where(r =>
                 r.RoomNumber.Contains(q, StringComparison.OrdinalIgnoreCase) ||
                 r.RoomType.Contains(q, StringComparison.OrdinalIgnoreCase));
             }
