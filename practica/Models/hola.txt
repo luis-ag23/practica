@@ -1,6 +1,1 @@
-﻿namespace practica.Models
-{
-    public class hola
-    {
-    }
-}
+﻿team 03
