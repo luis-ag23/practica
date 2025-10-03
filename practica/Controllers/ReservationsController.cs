@@ -18,8 +18,50 @@ namespace practica.Controllers
         public IActionResult GetOne(Guid id)
         {
             var reservation = _reservations.FirstOrDefault(r => r.Id == id);
-            return reservation is null ? NotFound(new {error="Reservation not found"})
-                :Ok(reservation);
+            return reservation is null ? NotFound(new { error = "Reservation not found" })
+                : Ok(reservation);
+        }
+        [HttpPost]
+        public IActionResult Create([FromBody] CreateReservationDto dto)
+        {
+            if (!ModelState.IsValid) return ValidationProblem(ModelState);
+            var reservation = new Reservation
+            {
+                Id = Guid.NewGuid(),
+                RoomId = Guid.NewGuid(),
+                CustomerId = Guid.NewGuid(),
+                CheckInDate = dto.CheckInDate,
+                CheckOutDate = dto.CheckOutDate,
+                Status = dto.Status.Trim()
+            };
+            _reservations.Add(reservation);
+            return CreatedAtAction(nameof(GetOne), new { id = reservation.Id }, reservation);
+        }
+        [HttpPut("{id:guid}")]
+        public IActionResult Update(Guid id, [FromBody] UpdateReservationDto dto)
+        {
+            if(!ModelState.IsValid) return ValidationProblem(ModelState);
+            var index = _reservations.FindIndex(r => r.Id == id);
+            if (index == -1)
+                return NotFound(new { error = "reservation not found", status = 404 });
+            var upadate = new Reservation
+            {
+                Id = id,
+                RoomId = Guid.NewGuid(),
+                CustomerId = Guid.NewGuid(),
+                CheckInDate = dto.CheckInDate,
+                CheckOutDate = dto.CheckOutDate,
+                Status = dto.Status.Trim()
+            };
+            _reservations[index] = upadate;
+            return Ok(upadate);
+        }
+        [HttpDelete("{id:guid}")]
+        public IActionResult Delete(Guid id)
+        {
+            var removed = _reservations.RemoveAll(r => r.Id == id);
+            return removed == 0 ? NotFound(new { error = "reservation not found", status = 404 })
+                : NoContent();
         }
 
     }
